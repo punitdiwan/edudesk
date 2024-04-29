@@ -309,7 +309,12 @@ userSchema.statics.getUserByUsername = function (user, callback) {
     return callback('Invalid Username - UserSchema.GetUserByUsername()', null);
   }
 
-  return this.model(COLLECTION).findOne({ email: user.trim() }).select('+password +accessToken').exec(callback);
+  if (user?.includes('@'))
+    return this.model(COLLECTION).findOne({ email: user.trim() }).select('+password +accessToken').exec(callback);
+  if (!user?.includes('@'))
+    return this.model(COLLECTION).findOne({ username: user.trim() }).select('+password +accessToken').exec(callback);
+
+  // return this.model(COLLECTION).findOne({ email: user.trim() }).select('+password +accessToken').exec(callback);
 };
 
 userSchema.statics.getByUsername = userSchema.statics.getUserByUsername;

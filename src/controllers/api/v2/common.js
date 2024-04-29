@@ -31,6 +31,37 @@ commonV2.login = async (req, res) => {
       return apiUtils.sendApiError(res, 401, 'Invalid Username/Password - commonV2.login');
 
     const tokens = await apiUtils.generateJWTToken(user);
+    // const tokens = (apiUtils.generateJWTToken = function (user) {
+    //   const nconf = require('nconf');
+    //   const jwt = require('jsonwebtoken');
+
+    //   const resUser = _.clone(user._doc);
+    //   const refreshToken = resUser.accessToken;
+    //   delete resUser.resetPassExpire;
+    //   delete resUser.resetPassHash;
+    //   delete resUser.password;
+    //   delete resUser.iOSDeviceTokens;
+    //   delete resUser.tOTPKey;
+    //   delete resUser.__v;
+    //   delete resUser.preferences;
+    //   delete resUser.accessToken;
+    //   delete resUser.deleted;
+    //   delete resUser.hasL2Auth;
+
+    //   const secret = nconf.get('tokens') ? nconf.get('tokens').secret : false;
+    //   const expires = nconf.get('tokens') ? nconf.get('tokens').expires : 3600;
+
+    //   require('../../models/group').getAllGroupsOfUserNoPopulate(dbUser._id, function (err, grps) {
+    //     if (err) return;
+    //     resUser.groups = grps.map(function (g) {
+    //       return g._id;
+    //     });
+
+    //     const token = jwt.sign({ user: resUser }, secret, { expiresIn: expires });
+
+    //     return callback(null, { token: token, refreshToken: refreshToken });
+    //   });
+    // });
 
     return apiUtils.sendApiSuccess(res, { token: tokens.token, refreshToken: tokens.refreshToken });
   } catch (e) {
