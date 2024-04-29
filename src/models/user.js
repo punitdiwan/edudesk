@@ -623,9 +623,9 @@ userSchema.statics.getCustomers = function (obj, callback) {
       if (err) return callback(err);
 
       var customerRoleIds = _.filter(accounts, function (a) {
-        return !a.role.isAdmin && !a.role.isAgent;
+        return !a?.role?.isAdmin && !a?.role?.isAgent;
       }).map(function (a) {
-        return a.role._id;
+        return a?.role?._id;
       });
 
       var q = self
