@@ -50,7 +50,7 @@ module.exports = function () {
 
             if (!user || user.deleted || !User.validate(password, user.password)) {
               req.flash('loginMessage', '');
-              return done(null, false, req.flash('loginMessage', 'Invalid Username/PasswordDD'));
+              return done(null, false, req.flash('loginMessage', 'Invalid Username/Password'));
             }
 
             req.user = user;
