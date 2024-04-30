@@ -1,0 +1,14 @@
+[Unit]
+Description=blinkit
+Documentation=EduDesk Support Management System from Maitretech Solution
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/root/.nvm/versions/node/v20.12.2/bin/node /root/edudesk/app.js
+WorkingDirectory=/root/edudesk
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
