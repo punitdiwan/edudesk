@@ -483,6 +483,116 @@ apiUsers.profileUpdate = function (req, res) {
 };
 
 /**
+ * @api {patch} /api/v1/users/:username Update User
+ * @apiName updateUserPassword
+ * @apiDescription Updates user's password only.
+ * @apiVersion 0.1.7
+ * @apiGroup User
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ * @apiParamExample {json} Request:
+ * {
+        aPass:          {{password}},
+        aPassconfirm:   {{password_confirm}},
+ * }
+*/
+apiUsers.updatePassword = function (req, res) {
+  if (!req.user) return res.status(400).json({ success: false, error: 'Invalid Patch Data' });
+  const username = req.user.username;
+  if (_.isNull(username) || _.isUndefined(username))
+    return res.status(400).json({ success: false, error: 'Invalid Patch Data' });
+
+  const data = req.body;
+  let passwordUpdated = false;
+
+  const obj = {
+    // fullname: data.aFullname, // Testing purpose
+    password: data.aPass,
+    passconfirm: data.aPassconfirm,
+  };
+  console.log('obj: ', obj);
+
+  let passwordComplexityEnabled = true;
+
+  async.series(
+    {
+      settings: function (done) {
+        const SettingUtil = require('../../../settings/settingsUtil');
+        SettingUtil.getSettings(function (err, content) {
+          if (err) return done(err);
+
+          const settings = content.data.settings;
+          passwordComplexityEnabled = settings.accountsPasswordComplexity.value;
+
+          return done();
+        });
+      },
+      user: function (done) {
+        UserSchema.getUserByUsername(username, function (err, user) {
+          if (err) return done(err);
+          if (!user) return done('Invalid User Object');
+
+          obj._id = user._id;
+
+          if (
+            !_.isUndefined(obj.password) &&
+            !_.isEmpty(obj.password) &&
+            !_.isUndefined(obj.passconfirm) &&
+            !_.isEmpty(obj.passconfirm)
+          ) {
+            console.log('password checks clear ');
+            if (obj.password === obj.passconfirm) {
+              if (passwordComplexityEnabled) {
+                // check Password Complexity
+                const passwordComplexity = require('../../../settings/passwordComplexity');
+                if (!passwordComplexity.validate(obj.password)) return done('Password does not meet requirements');
+              }
+
+              user.password = obj.password;
+              user.fullname = obj.fullname; // Testing purpose
+              passwordUpdated = true;
+            }
+          }
+
+          user.save(function (err, nUser) {
+            if (err) return done(err);
+
+            nUser.populate('role', function (err, populatedUser) {
+              if (err) return done(err);
+              const resUser = stripUserFields(populatedUser);
+
+              return done(null, resUser);
+            });
+          });
+        });
+      },
+      groups: function (done) {
+        groupSchema.getAllGroupsOfUser(obj._id, done);
+      },
+    },
+    async function (err, results) {
+      if (err) {
+        winston.debug(err);
+        return res.status(400).json({ success: false, error: err });
+      }
+
+      const user = results.user.toJSON();
+      console.log('user: ', user);
+      user.groups = results.groups.map(function (g) {
+        return { _id: g._id, name: g.name };
+      });
+
+      if (passwordUpdated) {
+        console.log('Password Updated. Destroying Sessions...');
+        const Session = require('../../../models/session');
+        await Session.destroy(user._id);
+      }
+
+      return res.json({ success: true, user: user, data: 'Hello world!!!' });
+    }
+  );
+};
+
+/**
  * @api {put} /api/v1/users/:username Update User
  * @apiName updateUser
  * @apiDescription Updates a single user.
