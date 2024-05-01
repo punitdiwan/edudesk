@@ -505,7 +505,7 @@ apiUsers.updatePassword = function (req, res) {
   let passwordUpdated = false;
 
   const obj = {
-    // fullname: data.aFullname, // Testing purpose
+    fullname: data.aFullname, // Testing purpose
     password: data.aPass,
     passconfirm: data.aPassconfirm,
   };

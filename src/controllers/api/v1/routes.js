@@ -136,7 +136,7 @@ module.exports = function (middleware, router, controllers) {
   router.get('/api/v1/users/notificationCount', apiv1, apiCtrl.users.notificationCount);
   router.get('/api/v1/users/getassignees', apiv1, isAgentOrAdmin, apiCtrl.users.getAssingees);
   router.get('/api/v1/users/:username', apiv1, canUser('accounts:view'), apiCtrl.users.single);
-  router.patch('/api/v1/users/:username', apiv1, canUser('accounts:updatePassword'), apiCtrl.users.updatePassword);
+  router.patch('/api/v1/users/:username', apiv1, canUser('accounts:update'), apiCtrl.users.updatePassword);
   router.put('/api/v1/users/:username', apiv1, canUser('accounts:update'), apiCtrl.users.update);
   router.get('/api/v1/users/:username/groups', apiv1, apiCtrl.users.getGroups);
   router.put('/api/v1/users/:username/updatepreferences', apiv1, apiCtrl.users.updatePreferences);
