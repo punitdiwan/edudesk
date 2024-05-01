@@ -62,7 +62,7 @@ commonV2.login = async (req, res) => {
     //     return callback(null, { token: token, refreshToken: refreshToken });
     //   });
     // });
-
+    console.log('tokens:', tokens);
     return apiUtils.sendApiSuccess(res, { token: tokens.token, refreshToken: tokens.refreshToken });
   } catch (e) {
     return apiUtils.sendApiError(res, 500, e.message);
