@@ -7,7 +7,8 @@
   },
   "bin": "./app.js",
   "scripts": {
-    "start": "nodemon ./app",
+    "start": "node ./app",
+    "dev": "nodemon ./app",
     "build": "grunt build",
     "test": "mocha --recursive",
     "lint": "standard | snazzy",
