@@ -119,11 +119,11 @@ mainController.loginPost = async function (req, res, next) {
     retrySecs = Math.round(resEmailAndIP.msBeforeNext / 1000) || 1
   }
 
-  if (retrySecs > 0) {
+/*  if (retrySecs > 0) {
     res.set('Retry-After', retrySecs.toString())
     // res.status(429).send(`Too many requests. Retry after ${retrySecs} seconds.`)
     res.status(429).render('429', { timeout: retrySecs.toString(), layout: false })
-  } else {
+  } else {*/
     passport.authenticate('local', async function (err, user) {
       if (err) {
         winston.error(err)
@@ -165,7 +165,7 @@ mainController.loginPost = async function (req, res, next) {
         })
       }
     })(req, res, next)
-  }
+  //}
 }
 
 mainController.l2AuthPost = function (req, res, next) {
